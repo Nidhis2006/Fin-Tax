@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTax User Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* General Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        /* display: flex; */
+        min-height: 100vh;
+        background-color: #f1f3f5;
+      }
+
+      .header {
+        background-color: #5fac59;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .header .head {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .header .logo {
+        width: 50px;
+        height: 50px;
+      }
+      .dashboard-container {
+        display: flex;
+        width: 100%;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px; /* Adjust width as needed */
+        height: 100vh; /* Full height */
+        background-color: #333;
+        color: white;
+        padding: 20px;
+        overflow-y: auto; /* Enables scrolling if needed */
+      }
+
+      .main-content {
+        margin-left: 260px; /* Adjust according to sidebar width */
+        padding: 20px;
+        overflow-y: auto;
+        width: 100%;
+        height: 100vh;
+      }
+
+      .sidebar h2 {
+        text-align: center;
+        font-size: 1.75rem;
+        margin-bottom: 40px;
+        color: #4caf50;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+      .sidebar ul li {
+        margin-bottom: 20px;
+      }
+      .sidebar ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.1rem;
+        display: block;
+        padding: 12px;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+      }
+      .sidebar ul li a:hover,
+      .sidebar ul li a.active {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .user-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        margin-bottom: 30px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+      }
+      .profile-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+      }
+      .user-name {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #333;
+      }
+      .section-card {
+        background-color: #fff;
+        padding: 30px;
+        margin-bottom: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+      button {
+        padding: 12px 20px;
+        background-color: #4caf50;
+        color: white;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      /* Adjusted Doughnut Chart Size */
+      #incomeExpenseChart {
+        width: 300px !important; /* Medium size of the chart */
+        height: 300px !important;
+        margin: 0 auto; /* Centered */
+      }
+
+      .tax-container {
+        max-width: 400px;
+        background: white;
+        padding: 20px;
+        margin: auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .result {
+        margin-top: 15px;
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .dashboard-container {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          padding: 20px;
+        }
+        .main-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="head">
+        <img
+          src="../image/reshot-icon-smart-solutions-WLD6JK24FB.svg"
+          alt="FinTax Logo"
+          class="logo"
+        />
+        <h1>FinTax: Financial and Tax Planning Solution</h1>
+      </div>
+    </header>
+    <div class="dashboard-container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <h2>Dashboard</h2>
+        <nav>
+          <ul>
+            <li><a href="#income-expense">Income & Expense</a></li>
+            <li><a href="#tax-planning">Tax Planning</a></li>
+            <li><a href="#investment">Wealth Management</a></li>
+            <li><a href="#reports">Reports & Insights</a></li>
+            <li><a href="#tax-filing">Tax Filing</a></li>
+            <li><a href="#advisory">Advisory</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- User Profile -->
+        <div class="user-header">
+          <h1>Welcome, John Doe</h1>
+          <div class="user-profile">
+            <img
+              src="../image/person.svg"
+              alt="User Profile"
+              class="profile-img"
+            />
+            <span class="user-name">John Doe</span>
+          </div>
+        </div>
+
+        <!-- Income & Expense Management -->
+        <section id="income-expense" class="section-card">
+          <h2>Income & Expense Management</h2>
+          <form id="incomeExpenseForm">
+            <div class="form-group">
+              <label for="type">Type:</label>
+              <select id="type" required>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="category">Category:</label>
+              <input
+                type="text"
+                id="category"
+                placeholder="e.g., Salary, Rent"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="amount">Amount:</label>
+              <input
+                type="number"
+                id="amount"
+                placeholder="e.g., 5000"
+                required
+              />
+            </div>
+            <button type="submit">Add Entry</button>
+          </form>
+          <canvas id="incomeExpenseChart"></canvas>
+        </section>
+
+        <!-- Tax Calculation & Planning -->
+        <section id="tax-planning" class="section-card">
+          <h2>Tax Calculation & Planning</h2>
+          <div class="tax-container">
+            <h2>Tax Calculator</h2>
+            <label for="income">Enter Annual Income ($):</label>
+            <input
+              type="number"
+              id="income"
+              placeholder="e.g., 50000"
+              required
+            />
+
+            <button onclick="calculateTax()">Calculate Tax</button>
+
+            <div class="result" id="taxResult"></div>
+          </div>
+        </section>
+
+        <!-- Investment & Wealth Management -->
+        <section id="investment" class="section-card">
+          <h2>Investment & Wealth Management</h2>
+          <button>Explore Investments</button>
+        </section>
+
+        <!-- Reports & Insights -->
+        <section id="reports" class="section-card">
+          <h2>Reports & Insights</h2>
+          <ul>
+            <li><a href="#">Download Tax Report - 2024</a></li>
+            <li><a href="#">Annual Financial Summary</a></li>
+            <li><a href="#">Expense Breakdown Report</a></li>
+          </ul>
+        </section>
+
+        <!-- Tax Filing & Compliance -->
+        <section id="tax-filing" class="section-card">
+          <h2>Tax Filing & Compliance</h2>
+          <button>File Your Taxes</button>
+        </section>
+
+        <!-- Advisory Services -->
+        <section id="advisory" class="section-card">
+          <h2>Advisory Services</h2>
+          <button>Schedule a Session</button>
+        </section>
+      </main>
+    </div>
+
+    <!-- Chart.js Script -->
+    <script>
+      const ctx = document
+        .getElementById("incomeExpenseChart")
+        .getContext("2d");
+      let income = 60000;
+      let expense = 35000;
+      const chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Income", "Expenses"],
+          datasets: [
+            {
+              data: [income, expense],
+              backgroundColor: ["#4CAF50", "#FF5722"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          aspectRatio: 1, // Ensuring it's a circle
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+      document
+        .getElementById("incomeExpenseForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const type = document.getElementById("type").value;
+          const amount = parseFloat(document.getElementById("amount").value);
+          if (type === "income") income += amount;
+          else expense += amount;
+
+          chart.data.datasets[0].data = [income, expense];
+          chart.update();
+          e.target.reset();
+        });
+
+      function calculateTax() {
+        let income = parseFloat(document.getElementById("income").value);
+        let tax = 0;
+
+        if (income <= 10000) {
+          tax = 0; // No tax for income ≤ 10,000
+        } else if (income <= 30000) {
+          tax = (income - 10000) * 0.1; // 10% for income between 10,001 - 30,000
+        } else if (income <= 70000) {
+          tax = 20000 * 0.1 + (income - 30000) * 0.2; // 20% for income between 30,001 - 70,000
+        } else {
+          tax = 20000 * 0.1 + 40000 * 0.2 + (income - 70000) * 0.3; // 30% for income above 70,000
+        }
+
+        document.getElementById(
+          "taxResult"
+        ).innerHTML = `Estimated Tax Payable: $${tax.toFixed(2)}`;
+      }
+    </script>
+  </body>
+</html>

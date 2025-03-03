@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTax</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <img
+        src="../image/reshot-icon-smart-solutions-WLD6JK24FB.svg"
+        alt="icon"
+        width="44px"
+        height="44px"
+      />
+      <div class="head1">
+        <h1>FinTax: Financial and Tax Planning Solution</h1>
+      </div>
+      <div class="head2">
+        <nav class="nav">
+          <ul class="list1">
+            <li><a href="login.html">Profile</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="intro-section">
+      <div class="content-container">
+        <div class="text-content">
+          <h4>
+            Welcome to FinTax – Your Trusted Financial & Tax Planning Partner
+          </h4>
+          <p>
+            At FinTax, we specialize in providing comprehensive financial and
+            tax planning solutions designed to help individuals and businesses
+            achieve financial security, growth, and compliance. From tax
+            optimization and accounting to investment strategies and business
+            advisory, our expert team ensures that your financial journey is
+            seamless, strategic, and stress-free.
+            <br />
+            Our expert team is committed to providing you with personalized
+            guidance, expertise, and support throughout your financial journey.<br/>
+            <h3>Here we provide you with<br/></h3>
+
+            <ul>
+              <li>Income and Expense Management</li>
+              <li>Report Summary</li>
+              <li>Advisior</li>
+            </ul>
+          </p>
+        </div>
+        <div class="image-content">
+          <img
+            src="../image/shutterstock_1591957570-scaled.jpg"
+            alt="FinTax Services"
+          />
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- Advisior -->
+    <section class="advisior">
+      <div class="content-container">
+        <h2>Our Advisiors :</h2>
+        <div class="advisors-container">
+          <div class="advisor">
+            <img
+              src="../image/person.svg"
+              alt="Advisor 1"
+              width="150px"
+              height="150px"
+            />
+            <h3>Vikram Rathod</h3>
+            <p>Finanical Advisior. <br/> Experience : 8 yrs</p>
+          </div>
+          <div class="advisor">
+            <img
+              src="../image/person.svg"
+              alt="Advisor 2"
+              width="150px"
+              height="150px"
+            />
+            <h3>Maria D'Souza</h3>
+            <p>Tax Advisior. <br/> Experience : 6 yrs</p>
+          </div>
+
+          <div class="advisor">
+            <img
+              src="../image/person.svg"
+              alt="Advisor 3"
+              width="150px"
+              height="150px"
+            />
+            <h3>Neha Sharma</h3>
+            <p>Tax Consultant. <br/> Experience : 5 yrs</p>
+          </div>
+
+          <div class="advisor">
+            <img
+              src="../image/person.svg"
+              alt="Advisor 4"
+              width="150px"
+              height="150px"
+            />
+            <h3>Rahul Singh</h3>
+            <p>Financial Manager. <br/> Experience : 3 yrs</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="feature-section">
+      <h2>Our Key Features</h2>
+      
+      <div class="feature-container">
+        <div class="feature-text">
+          <p><strong>Tax Savings Calculator 📊</strong></p>
+          <ul>
+              <li>Helps you estimate tax liabilities and plan deductions.</li>
+              <li>Enables efficient financial planning for savings.</li>
+              <li>Provides insights into tax-saving investments.</li>
+          </ul>
+        </div>
+        <div class="feature-calculator">
+            <div class="calculator">
+                <label for="income">Enter Annual Income ($):</label>
+                <input type="number" id="income" placeholder="e.g., 50000" required>
+                <button onclick="calculateTax()">Calculate Tax</button>
+                <div class="result" id="taxResult"></div>
+            </div>
+        </div>
+    </div>
+
+
+      <div class="feature-container" style="flex-direction: row-reverse;">
+          <div class="feature-text">
+            <p><strong>Financial Planning Assessment 🏦</strong></p>
+            <ul>
+                <li>Assesses your financial health based on income, expenses, and savings.</li>
+                <li>Gives personalized recommendations for better financial management.</li>
+                <li>Helps set realistic savings and investment goals.</li>
+            </ul>
+            </div>
+          <div class="feature-calculator">
+            <div class="financial-assessment">
+                <label for="monthlyIncome">Monthly Income (₹):</label>
+                <input type="number" id="monthlyIncome" placeholder="e.g., 50000" required>
+                <label for="monthlyExpenses">Monthly Expenses (₹):</label>
+                <input type="number" id="monthlyExpenses" placeholder="e.g., 30000" required>
+                <label for="savings">Monthly Savings (₹):</label>
+                <input type="number" id="savings" placeholder="e.g., 10000" required>
+                <button onclick="assessFinancialHealth()">Assess</button>
+                <div class="result" id="assessmentResult"></div>
+            </div>
+        </div>
+      </div>
+
+      <div class="feature-container">
+          <div class="feature-text">
+            <p><strong>ROI (Return on Investment) Simulator 📈</strong></p>
+            <ul>
+                <li>Estimates potential returns before investing.</li>
+                <li>Helps compare different investment options.</li>
+                <li>Assists in making informed financial decisions.</li>
+            </ul>
+           </div>
+          <div class="feature-calculator">
+            <div class="roi-calculator">
+                <label for="investment">Investment Amount (₹):</label>
+                <input type="number" id="investment" placeholder="e.g., 100000" required>
+                <label for="rate">Expected Return Rate (% per year):</label>
+                <input type="number" id="rate" placeholder="e.g., 7" required>
+                <label for="years">Investment Duration (Years):</label>
+                <input type="number" id="years" placeholder="e.g., 5" required>
+                <button onclick="calculateROI()">Calculate ROI</button>
+                <div class="result" id="roiResult"></div>
+            </div>
+        </div>
+      </div>
+  </section>
+
+    <section class="services" id="services">
+        <h2>Our Key Services</h2>
+        <div class="services-container">
+            <div class="service-card">
+                <img src="../image/tax.png" alt="Tax Planning">
+                <h3>Tax Planning & Optimization</h3>
+                <p>Minimize tax liabilities and maximize savings with expert tax strategies.</p>
+            </div>
+            <div class="service-card">
+                <img src="../image/icons8-wealth-64.png" alt="Wealth Management">
+                <h3>Wealth & Investment Planning</h3>
+                <p>Grow and manage your wealth with professional investment advice.</p>
+            </div>
+            <div class="service-card">
+                <img src="../image/icons8-retirement-50.png" alt="Retirement Planning">
+                <h3>Retirement & Pension Planning</h3>
+                <p>Plan your financial future for a secure and stress-free retirement.</p>
+            </div>
+            <div class="service-card">
+                <img src="../image/icons8-tax-50.png" alt="Business Tax Compliance">
+                <h3>Business Tax Compliance</h3>
+                <p>Ensure legal compliance and optimize tax strategies for your business.</p>
+            </div>
+           
+        </div>
+    </section>
+
+    <section class="testimonials">
+      <h2>What Our Clients Say</h2>
+      <div class="testimonial">
+        <p>"FinTax has transformed our financial strategy. Their expertise is unmatched."</p>
+        <h4>- Amit Sharma, CEO of Tech Innovators</h4>
+      </div>
+      <div class="testimonial">
+        <p>"The team at FinTax provided exceptional tax planning advice. Highly recommend their services."</p>
+        <h4>- Priya Singh, Founder of Green Earth Pvt. Ltd.</h4>
+      </div>
+    </section>
+    
+    <section class="trends-news">
+      <h2>Future Trends and Latest News</h2>
+      <div class="content-container">
+       
+        <div class="trends">
+          <h3>Future Trends in Finance and Taxation</h3>
+          <ul>
+            <li><strong>Digital Transformation in Finance</strong>: The integration of advanced technologies like artificial intelligence (AI) and machine learning is revolutionizing financial operations, enhancing efficiency, and enabling data-driven decision-making.</li>
+            <li><strong>Growth of Private Credit Markets</strong>: Private credit assets are projected to reach $2.8 trillion, offering alternative financing solutions and reshaping traditional lending landscapes.</li>
+            <li><strong>Tax Policy Revisions</strong>: Anticipated changes in tax laws, including potential corporate tax rate adjustments and the expiration of key provisions from the Tax Cuts and Jobs Act (TCJA) of 2017, could significantly impact financial planning and compliance strategies.</li>
+          </ul>
+        </div>
+        <div class="news">
+          <h3>Latest News in Finance and Taxation</h3>
+          <ul>
+            <li><strong>IRS Staffing Concerns</strong>: Recent discussions highlight that IRS staffing cuts may lead to delays in tax refunds, degraded taxpayer services, and challenges in law enforcement.</li>
+            <li><strong>European Union's Clean Industrial Deal</strong>: The EU is proposing a "Clean Industrial Deal" aimed at enhancing industrial competitiveness while reducing carbon emissions. This includes measures like tax incentives for clean energy investments and easing access to state aid.</li>
+            <li><strong>France's Pension Reform Debate</strong>: A new report from France's public audit office has reignited debates over the financial viability of the recent pension reform, potentially leading to political turmoil.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+    
+
+    <section class="contact" id="contact">
+      <h2>Contact Us</h2>
+      <p>Email: contact@fintax.com</p>
+      <p>Phone: +91-12345-67890</p>
+      <p>Address: 123 FinTax Street, Mumbai, Maharashtra, India</p>
+    </section>
+    <footer class="footer">
+      <p>&copy; <span id="currentYear"></span> FinTax. All rights reserved.</p>
+      <p>
+          <a href="#">Privacy Policy</a> | 
+          <a href="#">Terms of Service</a> | 
+          <a href="#">Contact Us</a>
+      </p>
+  </footer>
+    
+  <script src="script.js">
+  </script>
+  </body>
+</html>
