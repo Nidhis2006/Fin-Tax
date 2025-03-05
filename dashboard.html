@@ -5,264 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinTax User Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      /* General Reset */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        /* display: flex; */
-        min-height: 100vh;
-        background-color: #f1f3f5;
-      }
-
-      .header {
-        background-color: #5fac59;
-        color: #fff;
-        padding: 1rem;
-        text-align: center;
-      }
-
-      .header .head {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-      }
-
-      .header .logo {
-        width: 50px;
-        height: 50px;
-      }
-      .dashboard-container {
-        display: flex;
-        width: 100%;
-      }
-      .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 250px; /* Adjust width as needed */
-        height: 100vh; /* Full height */
-        background-color: #333;
-        color: white;
-        padding: 20px;
-        overflow-y: auto; /* Enables scrolling if needed */
-      }
-
-      .main-content {
-        margin-left: 260px; /* Adjust according to sidebar width */
-        padding: 20px;
-        overflow-y: auto;
-        width: 100%;
-        height: 100vh;
-      }
-
-      .sidebar h2 {
-        text-align: center;
-        font-size: 1.75rem;
-        margin-bottom: 40px;
-        color: #4caf50;
-      }
-      .sidebar ul {
-        list-style: none;
-        padding: 0;
-      }
-      .sidebar ul li {
-        margin-bottom: 20px;
-      }
-      .sidebar ul li a {
-        color: white;
-        text-decoration: none;
-        font-size: 1.1rem;
-        display: block;
-        padding: 12px;
-        border-radius: 8px;
-        transition: background-color 0.3s;
-      }
-      .sidebar ul li a:hover,
-      .sidebar ul li a.active {
-        background-color: #4caf50;
-        color: white;
-      }
-
-      .user-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        margin-bottom: 30px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-      }
-      .user-profile {
-        display: flex;
-        align-items: center;
-      }
-      .profile-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 15px;
-      }
-      .user-name {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #333;
-      }
-      .section-card {
-        background-color: #fff;
-        padding: 30px;
-        margin-bottom: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-      }
-      h2 {
-        font-size: 1.6rem;
-        margin-bottom: 20px;
-        color: #333;
-      }
-      .form-group {
-        margin-bottom: 20px;
-      }
-      .form-group label {
-        display: block;
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-      }
-      .form-group input,
-      .form-group select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-      }
-      button {
-        padding: 12px 20px;
-        background-color: #4caf50;
-        color: white;
-        font-size: 1.1rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      /* Adjusted Doughnut Chart Size */
-      #incomeExpenseChart {
-        width: 300px !important; /* Medium size of the chart */
-        height: 300px !important;
-        margin: 0 auto; /* Centered */
-      }
-
-      .tax-container {
-        max-width: 400px;
-        background: white;
-        padding: 20px;
-        margin: auto;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-
-      select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-        background: #fff;
-        color: #333;
-        appearance: none; /* Removes default dropdown arrow */
-        -webkit-appearance: none; /* For Safari */
-        -moz-appearance: none; /* For Firefox */
-      }
-
-      select:focus {
-        border-color: #4caf50; /* Green highlight like the button */
-        outline: none;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-      }
-
-      /* Custom dropdown arrow */
-      select::after {
-        content: "▼";
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: none;
-      }
-
-      h2 {
-        text-align: center;
-        margin-bottom: 15px;
-      }
-      label {
-        font-weight: bold;
-        display: block;
-        margin-top: 10px;
-      }
-      input {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      button {
-        width: 100%;
-        padding: 10px;
-        background: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 15px;
-      }
-      button:hover {
-        background: #45a049;
-      }
-      .result {
-        margin-top: 15px;
-        font-size: 1.1em;
-        font-weight: bold;
-        text-align: center;
-      }
-      .menu-item {
-        padding: 10px;
-        cursor: pointer;
-      }
-
-      .menu-item.active {
-        background-color: green;
-        color: white;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 1024px) {
-        .sidebar {
-          transform: translateX(-100%);
-          width: 250px;
-        }
-        .main-content {
-          margin-left: 0;
-        }
-        .menu-toggle {
-          display: block;
-          z-index: 1000;
-        }
-        .sidebar.open {
-          transform: translateX(0);
-        }
-      }
-    </style>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="dashboard.css" />
   </head>
   <body>
     <header class="header">
@@ -304,17 +51,23 @@
             </li>
             <li>
               <a href="#reports" class="menu-item" onclick="setActive(this)"
-                >Reports & Insights</a
+                >Reports & Compliance</a
               >
             </li>
+
             <li>
               <a href="#tax-filing" class="menu-item" onclick="setActive(this)"
-                >Tax Filing</a
+                >Tax Filing & E-Filing</a
               >
             </li>
             <li>
-              <a href="#advisory" class="menu-item" onclick="setActive(this)"
-                >Advisory</a
+              <a href="#security" class="menu-item" onclick="setActive(this)"
+                >Security & Data Protection</a
+              >
+            </li>
+            <li>
+              <a href="#ai-advisory" class="menu-item" onclick="setActive(this)"
+                >Advisory & AI-Based Recommendations</a
               >
             </li>
           </ul>
@@ -398,76 +151,208 @@
         <section id="tax-planning" class="section-card">
           <h2>Tax Calculation & Planning</h2>
 
-          <label for="income">Enter Annual Income (₹):</label>
-          <input
-            type="number"
-            id="income"
-            placeholder="e.g., 800000"
-            required
-          />
+          <div class="container">
+            <h3>Simple Tax Calculator</h3>
+            <label for="income">Enter Annual Income (₹):</label>
+            <input
+              type="number"
+              id="income"
+              placeholder="e.g., 800000"
+              required
+            />
 
-          <label for="deductions"
-            >Total Deductions (₹):
-            <span
-              class="info-icon"
-              title="Common deductions: 80C (₹1,50,000), Home Loan Interest, NPS, ELSS"
-            ></span>
-          </label>
-          <input
-            type="number"
-            id="deductions"
-            placeholder="Leave blank if unsure"
-          />
-          <br /><br />
+            <button onclick="calculateTax()">Calculate Tax</button>
+            <p id="result"></p>
 
-          <label for="deduction-category">Select Deductions:</label>
-          <select id="deduction-category">
-            <option value="150000">80C (PPF, ELSS, NPS) - ₹1,50,000</option>
-            <option value="200000">Home Loan Interest - ₹2,00,000</option>
-            <option value="50000">NPS Contribution - ₹50,000</option>
-            <option value="0">None</option>
-          </select>
-          <br /><br />
-
-          <label for="investments">Tax-Saving Investments (₹):</label>
-          <input type="number" id="investments" placeholder="e.g., 100000" />
-
-          <div id="investmentInfo" class="hidden">
-            <p>
-              Tax-saving investments like PPF, ELSS, and NPS help you reduce
-              taxable income.
-            </p>
+            <div id="tips">
+              <h3>Tax Planning Tips</h3>
+              <ul>
+                <li>
+                  Invest in <strong>ELSS, PPF, or NPS under Section 80C</strong>
+                  to save up to ₹1,50,000.
+                </li>
+                <li>
+                  Claim <strong>House Rent Allowance (HRA)</strong> if you pay
+                  rent.
+                </li>
+                <li>
+                  Avail deductions on
+                  <strong>home loan interest (₹2,00,000 limit)</strong>.
+                </li>
+                <li>
+                  Use <strong>Health Insurance (80D)</strong> to get deductions
+                  up to ₹25,000.
+                </li>
+                <li>
+                  Consider <strong>donations (80G)</strong> for additional tax
+                  benefits.
+                </li>
+              </ul>
+            </div>
           </div>
-
-          <button id="calculateTaxButton">Calculate Tax</button>
         </section>
         <!-- Investment & Wealth Management -->
-
         <section id="investment" class="section-card">
           <h2>Investment & Wealth Management</h2>
-          <button>Explore Investments</button>
+          <div class="calculator">
+            <h3>Investment Calculator</h3>
+            <input
+              type="number"
+              id="principal"
+              placeholder="Enter Investment Amount"
+            />
+            <input
+              type="number"
+              id="rate"
+              placeholder="Annual Interest Rate (%)"
+            />
+            <input
+              type="number"
+              id="time"
+              placeholder="Investment Duration (Years)"
+            />
+            <button onclick="calculateInvestment()">Calculate</button>
+            <h3 id="result"></h3>
+          </div>
+          <div class="tips-container">
+            <h3>💰 Investment & Wealth Management Tips</h3>
+            <ul class="tips-list">
+              <li>
+                <i class="fas fa-chart-pie"></i> Diversify Investments – Reduce
+                risk by spreading funds across assets.
+              </li>
+              <li>
+                <i class="fas fa-coins"></i> Invest Long-Term – Compounding
+                works best over time.
+              </li>
+              <li>
+                <i class="fas fa-exclamation-triangle"></i> Manage Risk – Keep
+                an emergency fund and avoid high-risk bets.
+              </li>
+              <li>
+                <i class="fas fa-piggy-bank"></i> Tax Optimization – Use
+                tax-saving investment options.
+              </li>
+              <li>
+                <i class="fas fa-chart-line"></i> Regular Investing – Use SIPs
+                for consistent investments.
+              </li>
+              <li>
+                <i class="fas fa-ban"></i> Avoid Debt Traps – Limit loans and
+                manage credit wisely.
+              </li>
+              <li>
+                <i class="fas fa-newspaper"></i> Stay Updated – Monitor market
+                trends and adjust strategy.
+              </li>
+              <li>
+                <i class="fas fa-user-tie"></i> Seek Expert Advice – Consult
+                financial advisors.
+              </li>
+            </ul>
+          </div>
+
+          <div class="dropdown">
+            <button class="explore-btn">Explore</button>
+            <div class="dropdown-content">
+              <a href="https://quest.finology.in/">Investment</a>
+              <a href="https://kuvera.in/blog/basics-of-wealth-management/"
+                >Wealth Management</a
+              >
+            </div>
+          </div>
         </section>
-        <!-- Reports & Insights -->
+
+        <!-- Reports & Compliance -->
+
         <section id="reports" class="section-card">
-          <h2>Reports & Insights</h2>
-          <ul>
-            <li><a href="#">Download Tax Report - 2024</a></li>
-            <li><a href="#">Annual Financial Summary</a></li>
-            <li><a href="#">Expense Breakdown Report</a></li>
+          <h2>Reports & Compliance</h2>
+          <ul id="reports-list">
+            <!-- Reports will be dynamically added here -->
           </ul>
         </section>
 
-        <!-- Tax Filing & Compliance -->
+        <!-- Tax Filing & E-Filing -->
+
         <section id="tax-filing" class="section-card">
-          <h2>Tax Filing & Compliance</h2>
-          <button>File Your Taxes</button>
+          <h2>Tax Filing & E-Filing</h2>
+          <div class="container">
+            <h2>Simple Tax Filing</h2>
+            <form id="taxForm">
+              <input
+                type="text"
+                id="pan"
+                placeholder="Enter PAN Number"
+                required
+              />
+              <input
+                type="number"
+                id="income"
+                placeholder="Annual Income (₹)"
+                required
+              />
+              <select id="taxRegime">
+                <option value="old">Old Regime</option>
+                <option value="new">New Regime</option>
+              </select>
+              <button type="button" onclick="submitForm()">Submit</button>
+            </form>
+            <p id="result"></p>
+          </div>
         </section>
 
-        <!-- Advisory Services -->
-        <section id="advisory" class="section-card">
-          <h2>Advisory Services</h2>
-          <button>Schedule a Session</button>
-        </section>
+        <!-- Security & Data Protection -->
+
+        <div id="security-section" class="section-card">
+          <h2>Security & Data Protection</h2>
+          <p>
+            Your financial data is encrypted with advanced security protocols.
+          </p>
+          <ul>
+            <li id="encryption">
+              🔐 <b>End-to-End Encryption</b>
+              <span
+                class="info-icon"
+                title="Your data is encrypted during transmission and storage."
+              ></span>
+            </li>
+            <li id="authentication">
+              🔑 <b>Multi-Factor Authentication</b>
+              <span
+                class="info-icon"
+                title="We use OTPs and biometric authentication for enhanced security."
+              ></span>
+            </li>
+          </ul>
+          <button id="security-check">Run Security Check</button>
+          <p id="security-result"></p>
+        </div>
+
+        <!-- Advisory & AI-Based Recommendations -->
+        <!-- <section id="ai-advisory" class="section-card">
+          <h2>Advisory & AI-Based Recommendations</h2>
+          <p>Get AI-driven financial insights and recommendations.</p>
+          <button onclick="generateAIRecommendations()">Get Insights</button>
+          <div id="ai-recommendations" class="result"></div>
+        </section> -->
+
+        <div id="ai-advisory" class="section-card">
+          <h2>Advisory & AI-Based Recommendations</h2>
+
+          <label for="goal">Select Your Financial Goal:</label>
+          <select id="goal">
+            <option value="">-- Select Goal --</option>
+            <option value="saving">💰 Saving Money</option>
+            <option value="investment">📈 Investment Planning</option>
+            <option value="tax">🧾 Tax Planning</option>
+          </select>
+
+          <button id="get-recommendation">Get Advice</button>
+
+          <div id="ai-response" class="hidden">
+            <p id="advice"></p>
+          </div>
+        </div>
       </main>
     </div>
 
