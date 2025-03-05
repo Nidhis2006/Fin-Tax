@@ -170,6 +170,36 @@
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
+
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        background: #fff;
+        color: #333;
+        appearance: none; /* Removes default dropdown arrow */
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+      }
+
+      select:focus {
+        border-color: #4caf50; /* Green highlight like the button */
+        outline: none;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+      }
+
+      /* Custom dropdown arrow */
+      select::after {
+        content: "▼";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
       h2 {
         text-align: center;
         margin-bottom: 15px;
@@ -205,18 +235,31 @@
         font-weight: bold;
         text-align: center;
       }
+      .menu-item {
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      .menu-item.active {
+        background-color: green;
+        color: white;
+      }
 
       /* Responsive Design */
       @media (max-width: 1024px) {
-        .dashboard-container {
-          flex-direction: column;
-        }
         .sidebar {
-          width: 100%;
-          padding: 20px;
+          transform: translateX(-100%);
+          width: 250px;
         }
         .main-content {
-          padding: 20px;
+          margin-left: 0;
+        }
+        .menu-toggle {
+          display: block;
+          z-index: 1000;
+        }
+        .sidebar.open {
+          transform: translateX(0);
         }
       }
     </style>
@@ -238,12 +281,42 @@
         <h2>Dashboard</h2>
         <nav>
           <ul>
-            <li><a href="#income-expense">Income & Expense</a></li>
-            <li><a href="#tax-planning">Tax Planning</a></li>
-            <li><a href="#investment">Wealth Management</a></li>
-            <li><a href="#reports">Reports & Insights</a></li>
-            <li><a href="#tax-filing">Tax Filing</a></li>
-            <li><a href="#advisory">Advisory</a></li>
+            <li>
+              <a
+                href="#income-expense"
+                class="menu-item"
+                onclick="setActive(this)"
+                >Income & Expense</a
+              >
+            </li>
+            <li>
+              <a
+                href="#tax-planning"
+                class="menu-item"
+                onclick="setActive(this)"
+                >Tax Planning</a
+              >
+            </li>
+            <li>
+              <a href="#investment" class="menu-item" onclick="setActive(this)"
+                >Wealth Management</a
+              >
+            </li>
+            <li>
+              <a href="#reports" class="menu-item" onclick="setActive(this)"
+                >Reports & Insights</a
+              >
+            </li>
+            <li>
+              <a href="#tax-filing" class="menu-item" onclick="setActive(this)"
+                >Tax Filing</a
+              >
+            </li>
+            <li>
+              <a href="#advisory" class="menu-item" onclick="setActive(this)"
+                >Advisory</a
+              >
+            </li>
           </ul>
         </nav>
       </aside>
@@ -264,6 +337,7 @@
         </div>
 
         <!-- Income & Expense Management -->
+
         <section id="income-expense" class="section-card">
           <h2>Income & Expense Management</h2>
           <form id="incomeExpenseForm">
@@ -294,34 +368,85 @@
             </div>
             <button type="submit">Add Entry</button>
           </form>
+          <br /><br />
+          <div class="summary">
+            <h3>💰 Monthly Summary</h3>
+            <p>
+              <strong>Total Income:</strong> ₹<span id="totalIncome">0</span>
+            </p>
+            <p>
+              <strong>Total Expense:</strong> ₹<span id="totalExpense">0</span>
+            </p>
+            <p><strong>Savings:</strong> ₹<span id="savings">0</span></p>
+          </div>
+
+          <!-- Pie Chart -->
           <canvas id="incomeExpenseChart"></canvas>
-        </section>
 
-        <!-- Tax Calculation & Planning -->
-        <section id="tax-planning" class="section-card">
-          <h2>Tax Calculation & Planning</h2>
-          <div class="tax-container">
-            <h2>Tax Calculator</h2>
-            <label for="income">Enter Annual Income ($):</label>
-            <input
-              type="number"
-              id="income"
-              placeholder="e.g., 50000"
-              required
-            />
-
-            <button onclick="calculateTax()">Calculate Tax</button>
-
-            <div class="result" id="taxResult"></div>
+          <!-- Financial Tip Section -->
+          <div id="financialTips" style="margin-top: 20px">
+            <h3>📢 Financial Insights</h3>
+            <div id="financialTip" style="font-weight: bold; margin-top: 10px">
+              <div id="incomeTip" style="color: green; font-weight: bold"></div>
+              <div id="expenseTip" style="color: red; font-weight: bold"></div>
+            </div>
           </div>
         </section>
 
+        <!-- Tax Calculation & Planning -->
+
+        <section id="tax-planning" class="section-card">
+          <h2>Tax Calculation & Planning</h2>
+
+          <label for="income">Enter Annual Income (₹):</label>
+          <input
+            type="number"
+            id="income"
+            placeholder="e.g., 800000"
+            required
+          />
+
+          <label for="deductions"
+            >Total Deductions (₹):
+            <span
+              class="info-icon"
+              title="Common deductions: 80C (₹1,50,000), Home Loan Interest, NPS, ELSS"
+            ></span>
+          </label>
+          <input
+            type="number"
+            id="deductions"
+            placeholder="Leave blank if unsure"
+          />
+          <br /><br />
+
+          <label for="deduction-category">Select Deductions:</label>
+          <select id="deduction-category">
+            <option value="150000">80C (PPF, ELSS, NPS) - ₹1,50,000</option>
+            <option value="200000">Home Loan Interest - ₹2,00,000</option>
+            <option value="50000">NPS Contribution - ₹50,000</option>
+            <option value="0">None</option>
+          </select>
+          <br /><br />
+
+          <label for="investments">Tax-Saving Investments (₹):</label>
+          <input type="number" id="investments" placeholder="e.g., 100000" />
+
+          <div id="investmentInfo" class="hidden">
+            <p>
+              Tax-saving investments like PPF, ELSS, and NPS help you reduce
+              taxable income.
+            </p>
+          </div>
+
+          <button id="calculateTaxButton">Calculate Tax</button>
+        </section>
         <!-- Investment & Wealth Management -->
+
         <section id="investment" class="section-card">
           <h2>Investment & Wealth Management</h2>
           <button>Explore Investments</button>
         </section>
-
         <!-- Reports & Insights -->
         <section id="reports" class="section-card">
           <h2>Reports & Insights</h2>
@@ -347,66 +472,6 @@
     </div>
 
     <!-- Chart.js Script -->
-    <script>
-      const ctx = document
-        .getElementById("incomeExpenseChart")
-        .getContext("2d");
-      let income = 60000;
-      let expense = 35000;
-      const chart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["Income", "Expenses"],
-          datasets: [
-            {
-              data: [income, expense],
-              backgroundColor: ["#4CAF50", "#FF5722"],
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          aspectRatio: 1, // Ensuring it's a circle
-          plugins: {
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      });
-
-      document
-        .getElementById("incomeExpenseForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          const type = document.getElementById("type").value;
-          const amount = parseFloat(document.getElementById("amount").value);
-          if (type === "income") income += amount;
-          else expense += amount;
-
-          chart.data.datasets[0].data = [income, expense];
-          chart.update();
-          e.target.reset();
-        });
-
-      function calculateTax() {
-        let income = parseFloat(document.getElementById("income").value);
-        let tax = 0;
-
-        if (income <= 10000) {
-          tax = 0; // No tax for income ≤ 10,000
-        } else if (income <= 30000) {
-          tax = (income - 10000) * 0.1; // 10% for income between 10,001 - 30,000
-        } else if (income <= 70000) {
-          tax = 20000 * 0.1 + (income - 30000) * 0.2; // 20% for income between 30,001 - 70,000
-        } else {
-          tax = 20000 * 0.1 + 40000 * 0.2 + (income - 70000) * 0.3; // 30% for income above 70,000
-        }
-
-        document.getElementById(
-          "taxResult"
-        ).innerHTML = `Estimated Tax Payable: $${tax.toFixed(2)}`;
-      }
-    </script>
+    <script src="dashboard.js"></script>
   </body>
 </html>

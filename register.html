@@ -129,26 +129,6 @@
         text-decoration: underline;
       }
 
-      select {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid;
-        border-radius: 5px;
-        font-size: 16px;
-        background-color: #f4f4f4;
-        /* color: #333; */
-        cursor: pointer;
-      }
-
-      select:hover {
-        border-color: #0056b3;
-      }
-
-      select:focus {
-        outline: none;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-      }
-
       @media (min-width: 768px) {
         .register-left {
           display: block;
@@ -201,13 +181,6 @@
               required
               pattern="[0-9]{10}"
             />
-
-            <label for="role">Role:</label>
-            <select id="role" name="role" required>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-            <br /><br />
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required />
