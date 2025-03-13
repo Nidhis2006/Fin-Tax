@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinTax User Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script
+    <!-- <script
       src="https://kit.fontawesome.com/a076d05399.js"
       crossorigin="anonymous"
-    ></script>
+    ></script> -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <link rel="stylesheet" href="dashboard.css" />
   </head>
   <body>
@@ -70,6 +75,7 @@
                 >Advisory & AI-Based Recommendations</a
               >
             </li>
+            <button id="logoutButton" class="logout-btn">Logout</button>
           </ul>
         </nav>
       </aside>
@@ -77,15 +83,27 @@
       <!-- Main Content -->
       <main class="main-content">
         <!-- User Profile -->
-        <div class="user-header">
-          <h1>Welcome, John Doe</h1>
+        <div id="user-info-box" class="user-header">
+          <h1>Welcome, <span class="user-name"></span></h1>
           <div class="user-profile">
             <img
               src="./image/person.svg"
               alt="User Profile"
               class="profile-img"
             />
-            <span class="user-name">John Doe</span>
+          </div>
+        </div>
+
+        <div id="user-modal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Your Profile</h2>
+            <p><strong>Name:</strong> <span id="edit-name"></span></p>
+            <p><strong>Email:</strong> <span id="edit-email"></span></p>
+            <button id="edit-profile">Edit Profile</button>
+            <button id="save-changes" style="display: none">
+              Save Changes
+            </button>
           </div>
         </div>
 
@@ -122,6 +140,7 @@
             <button type="submit">Add Entry</button>
           </form>
           <br /><br />
+
           <div class="summary">
             <h3>💰 Monthly Summary</h3>
             <p>
@@ -144,6 +163,22 @@
               <div id="expenseTip" style="color: red; font-weight: bold"></div>
             </div>
           </div>
+
+          <button id="showDataBtn">Show Data</button>
+          <div class="transaction-list">
+            <h3>📋 Transaction History</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="transactionTableBody"></tbody>
+            </table>
+          </div>
         </section>
 
         <!-- Tax Calculation & Planning -->
@@ -161,7 +196,7 @@
               required
             />
 
-            <button onclick="calculateTax()">Calculate Tax</button>
+            <button id="calculateTaxButton">Calculate Tax</button>
             <p id="result"></p>
 
             <div id="tips">
@@ -191,6 +226,7 @@
             </div>
           </div>
         </section>
+
         <!-- Investment & Wealth Management -->
         <section id="investment" class="section-card">
           <h2>Investment & Wealth Management</h2>
@@ -211,8 +247,8 @@
               id="time"
               placeholder="Investment Duration (Years)"
             />
-            <button onclick="calculateInvestment()">Calculate</button>
-            <h3 id="result"></h3>
+            <button id="calculateInvestmentButton">Calculate</button>
+            <h3 id="investmentResult"></h3>
           </div>
           <div class="tips-container">
             <h3>💰 Investment & Wealth Management Tips</h3>
@@ -252,7 +288,7 @@
             </ul>
           </div>
 
-          <div class="dropdown">
+          <!-- <div class="dropdown">
             <button class="explore-btn">Explore</button>
             <div class="dropdown-content">
               <a href="https://quest.finology.in/">Investment</a>
@@ -260,21 +296,21 @@
                 >Wealth Management</a
               >
             </div>
-          </div>
+          </div> -->
         </section>
 
         <!-- Reports & Compliance -->
 
-        <section id="reports" class="section-card">
+        <!-- <section id="reports" class="section-card">
           <h2>Reports & Compliance</h2>
           <ul id="reports-list">
-            <!-- Reports will be dynamically added here -->
-          </ul>
-        </section>
+            Reports will be dynamically added here -->
+        <!--</ul>
+        </section> -->
 
         <!-- Tax Filing & E-Filing -->
 
-        <section id="tax-filing" class="section-card">
+        <!-- <section id="tax-filing" class="section-card">
           <h2>Tax Filing & E-Filing</h2>
           <div class="container">
             <h2>Simple Tax Filing</h2>
@@ -299,11 +335,11 @@
             </form>
             <p id="result"></p>
           </div>
-        </section>
+        </section> -->
 
         <!-- Security & Data Protection -->
 
-        <div id="security-section" class="section-card">
+        <div id="security" class="section-card">
           <h2>Security & Data Protection</h2>
           <p>
             Your financial data is encrypted with advanced security protocols.
@@ -357,6 +393,6 @@
     </div>
 
     <!-- Chart.js Script -->
-    <script src="dashboard.js"></script>
+    <script src="dashboard.js" defer></script>
   </body>
 </html>

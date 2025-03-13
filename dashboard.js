@@ -1,534 +1,385 @@
 document.addEventListener("DOMContentLoaded", function () {
-  let income = 0;
-  let expense = 0;
+  function getCookie(name) {
+    let cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+      let [key, value] = cookie.split("=");
+      if (key === name) {
+        return value;
+      }
+    }
+    return null;
+  }
 
-  // Initialize Chart.js
-  const ctx = document.getElementById("incomeExpenseChart").getContext("2d");
+  // Check if token exists
+  const token = getCookie("token");
 
-  let incomeExpenseChart = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Income", "Expense"],
-      datasets: [
-        {
-          data: [income, expense],
-          backgroundColor: ["#4caf50", "#f44336"], // Green for income, Red for expense
-        },
-      ],
-    },
-    options: {
-      aspectRatio: 1, // Ensures the chart is always circular
-      responsive: true,
-    },
+  if (!token) {
+    window.location.href = "login.html"; // Redirect to Login
+  }
+
+  const userName = localStorage.getItem("name") || "User";
+  document.querySelectorAll(".user-name").forEach((el) => {
+    el.textContent = userName;
   });
+  document.querySelector(
+    ".user-header h1"
+  ).textContent = `Welcome, ${userName}`;
 
-  // Array of financial tips for income and expenses
-  const incomeTips = [
-    "💰 Save at least 20% of your income every month.",
-    "📈 Invest in upskilling courses to boost your income.",
-    "🏦 Consider passive income sources like stock investments.",
-    "📊 Automate your savings for better financial growth.",
-    "🔄 Diversify your income sources for financial stability.",
-  ];
+  fetchExpenses(new Date().getMonth() + 1, new Date().getFullYear());
 
-  const expenseTips = [
-    "⚠️ Cut down unnecessary expenses like frequent dining out.",
-    "📉 Create a budget to track your spending patterns.",
-    "🛍️ Avoid impulse purchases by following the 24-hour rule.",
-    "💡 Compare prices before making big purchases.",
-    "🏷️ Look for discounts and cashback offers when shopping.",
-  ];
-
-  // Function to update the chart
-  function updateChart() {
-    incomeExpenseChart.data.datasets[0].data = [income, expense];
-    incomeExpenseChart.update();
+  function fetchExpenses(month, year) {
+    fetch("http://localhost:4000/api/v1/expenses/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ month, year }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          updateExpenseSummary(data.data);
+        } else {
+          alert("⚠️ Error fetching expenses.");
+        }
+      })
+      .catch((error) => console.error("Error fetching expenses:", error));
   }
 
-  // Function to update financial tips
-  function updateFinancialTips() {
-    const incomeTipElement = document.getElementById("incomeTip");
-    const expenseTipElement = document.getElementById("expenseTip");
+  function updateExpenseSummary(expenses) {
+    let totalIncome = 0;
+    let totalExpense = 0;
 
-    // Display a random income tip if income exists
-    if (income > 0) {
-      incomeTipElement.innerText =
-        "💰 Income Tip: " +
-        incomeTips[Math.floor(Math.random() * incomeTips.length)];
-    } else {
-      incomeTipElement.innerText = "";
-    }
-
-    // Display a random expense tip if expense exists
-    if (expense > 0) {
-      expenseTipElement.innerText =
-        "💸 Expense Tip: " +
-        expenseTips[Math.floor(Math.random() * expenseTips.length)];
-    } else {
-      expenseTipElement.innerText = "";
-    }
-  }
-
-  // Form submission event
-  document
-    .getElementById("incomeExpenseForm")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent page refresh
-
-      const type = document.getElementById("type").value;
-      const category = document.getElementById("category").value.trim();
-      const amount = parseFloat(document.getElementById("amount").value);
-
-      // **🚨 Validate Category Field (Only Letters Allowed)**
-      const categoryRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
-      if (!categoryRegex.test(category)) {
-        alert("⚠️ Invalid category! Only letters are allowed.");
-        return;
+    expenses.forEach((entry) => {
+      if (entry.type === "income") {
+        totalIncome += entry.amount;
+      } else if (entry.type === "expense") {
+        totalExpense += entry.amount;
       }
-
-      // Validate Amount
-      if (isNaN(amount) || amount <= 0) {
-        alert("⚠️ Please enter a valid amount!");
-        return;
-      }
-
-      // Update income or expense
-      if (type === "income") {
-        income += amount;
-      } else {
-        expense += amount;
-      }
-
-      // Update UI values
-      document.getElementById("totalIncome").textContent = income;
-      document.getElementById("totalExpense").textContent = expense;
-      document.getElementById("savings").textContent = income - expense;
-
-      // Update the chart & financial tip
-      updateChart();
-      updateFinancialTips();
-
-      // Clear input fields
-      document.getElementById("amount").value = "";
-      document.getElementById("category").value = "";
     });
 
-  // Initial chart and tip update
-  updateChart();
-  updateFinancialTips();
-});
+    document.getElementById("totalIncome").textContent = totalIncome;
+    document.getElementById("totalExpense").textContent = totalExpense;
+    document.getElementById("savings").textContent = totalIncome - totalExpense;
 
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("calculateTaxButton")
-    .addEventListener("click", calculateTax);
-});
-
-function calculateTax() {
-  let income = parseFloat(document.getElementById("income").value) || 0;
-  let tax = 0;
-
-  if (income > 1500000) {
-    tax += (income - 1500000) * 0.3;
-    income = 1500000;
-  }
-  if (income > 1200000) {
-    tax += (income - 1200000) * 0.2;
-    income = 1200000;
-  }
-  if (income > 900000) {
-    tax += (income - 900000) * 0.15;
-    income = 900000;
-  }
-  if (income > 600000) {
-    tax += (income - 600000) * 0.1;
-    income = 600000;
-  }
-  if (income > 300000) {
-    tax += (income - 300000) * 0.05;
+    updateChart(totalIncome, totalExpense);
+    updateFinancialTips(totalIncome, totalExpense);
   }
 
-  document.getElementById("result").innerHTML = `Estimated Tax: ₹${tax.toFixed(
-    2
-  )}`;
-  document.getElementById("tips").style.display = "block";
-}
-function suggestInvestments(taxableIncome) {
-  let suggestion = "";
-  if (taxableIncome > 500000) {
-    suggestion =
-      "Consider investing in PPF, ELSS, or NPS to reduce taxable income.";
-  } else {
-    suggestion = "You are already in a lower tax bracket.";
-  }
-  document.getElementById("investmentSuggestion").innerText = suggestion;
-}
-
-function setActive(element) {
-  // Remove "active" class from all menu items
-  document.querySelectorAll(".menu-item").forEach((item) => {
-    item.classList.remove("active");
-  });
-
-  // Add "active" class to the clicked item
-  element.classList.add("active");
-}
-
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("open");
-}
-function setActive(element) {
-  document
-    .querySelectorAll(".menu-item")
-    .forEach((item) => item.classList.remove("active"));
-  element.classList.add("active");
-}
-
-function startTaxFiling() {
-  alert("Redirecting to E-Filing portal...");
-  // Implement actual e-filing logic here
-}
-
-function generateAIRecommendations() {
-  document.getElementById("ai-recommendations").innerHTML =
-    "📊 Based on your income & expenses, we suggest investing in mutual funds for long-term growth.";
-}
-
-function setActive(element) {
-  document
-    .querySelectorAll(".menu-item")
-    .forEach((item) => item.classList.remove("active"));
-  element.classList.add("active");
-}
-
-function toggleDropdown() {
-  var dropdown = document.getElementById("dropdown");
-  dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-}
-
-function calculateInvestment() {
-  let principal = document.getElementById("principal").value;
-  let rate = document.getElementById("rate").value;
-  let time = document.getElementById("time").value;
-
-  if (principal === "" || rate === "" || time === "") {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  let interestRate = rate / 100;
-  let futureValue = principal * Math.pow(1 + interestRate, time);
-
-  document.getElementById(
-    "result"
-  ).innerHTML = `Future Value: ₹${futureValue.toFixed(2)}`;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const reportsList = document.getElementById("reports-list");
-
-  reportsList.innerHTML = "<p class='loading'>Fetching reports...</p>";
-
-  setTimeout(() => {
-    const reports = [
-      { name: "Tax Report 2024", url: "/reports/tax-2024.pdf" },
-      {
-        name: "Annual Financial Summary",
-        url: "/reports/financial-summary.pdf",
+  function updateChart(totalIncome, totalExpense) {
+    const ctx = document.getElementById("incomeExpenseChart").getContext("2d");
+    new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["Income", "Expense"],
+        datasets: [
+          {
+            data: [totalIncome, totalExpense],
+            backgroundColor: ["#4caf50", "#f44336"],
+          },
+        ],
       },
-      {
-        name: "Expense Breakdown Report",
-        url: "/reports/expense-breakdown.pdf",
+      options: {
+        aspectRatio: 1,
+        responsive: true,
       },
+    });
+  }
+
+  function updateFinancialTips(income, expense) {
+    const incomeTips = [
+      "💰 Save at least 20% of your income every month.",
+      "📈 Invest in upskilling courses to boost your income.",
     ];
 
-    reportsList.innerHTML = "";
+    const expenseTips = [
+      "⚠️ Cut down unnecessary expenses like frequent dining out.",
+      "📉 Create a budget to track your spending patterns.",
+    ];
 
-    reports.forEach((report) => {
-      const listItem = document.createElement("li");
-      const link = document.createElement("a");
-
-      link.textContent = report.name;
-      link.href = report.url;
-      link.target = "_blank";
-
-      listItem.appendChild(link);
-      reportsList.appendChild(listItem);
-    });
-  }, 2000);
-});
-
-// document.getElementById("start-filing").addEventListener("click", () => {
-//   document.getElementById("wizard").classList.remove("hidden");
-// });
-
-// function nextStep(step) {
-//   // Hide all steps
-//   document.querySelectorAll("#wizard > div").forEach((div) => {
-//     div.classList.add("hidden");
-//   });
-
-//   // Show the next step
-//   const nextStepDiv = document.getElementById(`step-${step}`);
-//   if (nextStepDiv) {
-//     nextStepDiv.classList.remove("hidden");
-//   } else {
-//     console.error(`Step ${step} not found!`);
-//   }
-// }
-
-// function calculateIncomeTax() {
-//   const income = Number(document.getElementById("income").value);
-//   const regime = document.getElementById("tax-regime").value; // Get selected regime
-//   let taxableIncome = income;
-//   let tax = 0;
-
-//   if (regime === "old") {
-//     // Apply standard deduction of ₹50,000 in old regime
-//     taxableIncome -= 50000;
-
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 1000000)
-//         tax = (taxableIncome - 500000) * 0.2 + 12500;
-//       else tax = (taxableIncome - 1000000) * 0.3 + 112500;
-//     }
-//   } else {
-//     // New Regime (Post Budget 2023-24)
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 750000)
-//         tax = (taxableIncome - 500000) * 0.1 + 12500;
-//       else if (taxableIncome <= 900000)
-//         tax = (taxableIncome - 750000) * 0.15 + 37500;
-//       else if (taxableIncome <= 1200000)
-//         tax = (taxableIncome - 900000) * 0.2 + 75000;
-//       else if (taxableIncome <= 1500000)
-//         tax = (taxableIncome - 1200000) * 0.25 + 135000;
-//       else tax = (taxableIncome - 1500000) * 0.3 + 210000;
-//     }
-//   }
-
-//   // Display Result
-//   document.getElementById(
-//     "tax-result"
-//   ).textContent = `Estimated Tax (${regime.toUpperCase()} Regime): ₹${tax.toFixed(
-//     2
-//   )}`;
-// }
-
-// Show the wizard when clicking "Start E-Filing"
-// document.getElementById("start-filing").addEventListener("click", () => {
-//   document.getElementById("wizard").classList.remove("hidden");
-// });
-
-// // Function to navigate between steps
-// function nextStep(step) {
-//   // Hide all steps
-//   document.querySelectorAll("#wizard > div").forEach((div) => {
-//     div.classList.add("hidden");
-//   });
-
-//   // Show the next step
-//   const nextStepDiv = document.getElementById(`step-${step}`);
-//   if (nextStepDiv) {
-//     nextStepDiv.classList.remove("hidden");
-//   } else {
-//     console.error(`Step ${step} not found!`);
-//   }
-// }
-
-// // Function to calculate income tax
-// function calculateIncomeTax() {
-//   const income = Number(document.getElementById("income").value);
-//   const regime = document.getElementById("tax-regime").value;
-//   let taxableIncome = income;
-//   let tax = 0;
-
-//   if (regime === "old") {
-//     taxableIncome -= 50000; // Apply standard deduction
-
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 1000000)
-//         tax = (taxableIncome - 500000) * 0.2 + 12500;
-//       else tax = (taxableIncome - 1000000) * 0.3 + 112500;
-//     }
-//   } else {
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 750000)
-//         tax = (taxableIncome - 500000) * 0.1 + 12500;
-//       else if (taxableIncome <= 900000)
-//         tax = (taxableIncome - 750000) * 0.15 + 37500;
-//       else if (taxableIncome <= 1200000)
-//         tax = (taxableIncome - 900000) * 0.2 + 75000;
-//       else if (taxableIncome <= 1500000)
-//         tax = (taxableIncome - 1200000) * 0.25 + 135000;
-//       else tax = (taxableIncome - 1500000) * 0.3 + 210000;
-//     }
-//   }
-
-//   document.getElementById(
-//     "tax-result"
-//   ).textContent = `Estimated Tax (${regime.toUpperCase()} Regime): ₹${tax.toFixed(
-//     2
-//   )}`;
-// }
-
-// // Automatically calculate tax when income or tax regime changes
-// document.getElementById("income").addEventListener("input", calculateIncomeTax);
-// document
-//   .getElementById("tax-regime")
-//   .addEventListener("change", calculateIncomeTax);
-
-// Show wizard when clicking "Start E-Filing"
-// document.getElementById("start-filing").addEventListener("click", () => {
-//   document.getElementById("wizard").classList.remove("hidden");
-// });
-
-// // Function to move to the next step
-// function nextStep(step) {
-//   if (step === 2 && !validatePAN()) return;
-//   if (step === 3) calculateIncomeTax(); // Auto-calculate before moving to step 3
-
-//   document.querySelectorAll("#wizard > div").forEach((div) => {
-//     div.classList.add("hidden");
-//   });
-
-//   document.getElementById(`step-${step}`).classList.remove("hidden");
-// }
-
-// // Validate PAN format (Indian PAN format: 5 letters + 4 digits + 1 letter)
-// function validatePAN() {
-//   const pan = document.getElementById("pan").value.trim().toUpperCase();
-//   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-
-//   if (!panRegex.test(pan)) {
-//     document.getElementById("pan-error").style.display = "block";
-//     return false;
-//   }
-
-//   document.getElementById("pan-error").style.display = "none";
-//   return true;
-// }
-
-// // Function to calculate income tax
-// function calculateIncomeTax() {
-//   // const income = Number(document.getElementById("income").value);
-//   // const regime = document.getElementById("tax-regime").value;
-//   let income = Number(incomeField.value.trim());
-//   let taxableIncome = income;
-//   let tax = 0;
-
-//   if (income <= 0 || isNaN(income)) {
-//     document.getElementById("tax-result").textContent =
-//       "Please enter a valid income amount!";
-//     return;
-//   }
-
-//   if (regime === "old") {
-//     taxableIncome -= 50000;
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 1000000)
-//         tax = (taxableIncome - 500000) * 0.2 + 12500;
-//       else tax = (taxableIncome - 1000000) * 0.3 + 112500;
-//     }
-//   } else {
-//     if (taxableIncome > 250000) {
-//       if (taxableIncome <= 500000) tax = (taxableIncome - 250000) * 0.05;
-//       else if (taxableIncome <= 750000)
-//         tax = (taxableIncome - 500000) * 0.1 + 12500;
-//       else if (taxableIncome <= 900000)
-//         tax = (taxableIncome - 750000) * 0.15 + 37500;
-//       else if (taxableIncome <= 1200000)
-//         tax = (taxableIncome - 900000) * 0.2 + 75000;
-//       else if (taxableIncome <= 1500000)
-//         tax = (taxableIncome - 1200000) * 0.25 + 135000;
-//       else tax = (taxableIncome - 1500000) * 0.3 + 210000;
-//     }
-//   }
-
-//   document.getElementById(
-//     "tax-result"
-//   ).textContent = `Estimated Tax (${regime.toUpperCase()} Regime): ₹${tax.toFixed(
-//     2
-//   )}`;
-// }
-
-function submitForm() {
-  let pan = document.getElementById("pan").value;
-  let income = document.getElementById("income").value;
-  let regime = document.getElementById("taxRegime").value;
-
-  if (!pan || !income) {
-    alert("Please fill in all fields");
-    return;
+    document.getElementById("incomeTip").innerText =
+      income > 0
+        ? `💰 Tip: ${incomeTips[Math.floor(Math.random() * incomeTips.length)]}`
+        : "";
+    document.getElementById("expenseTip").innerText =
+      expense > 0
+        ? `💸 Tip: ${
+            expenseTips[Math.floor(Math.random() * expenseTips.length)]
+          }`
+        : "";
   }
 
-  document.getElementById(
-    "result"
-  ).innerText = `Tax details submitted! \n PAN: ${pan} \n Income: ₹${income} \n Regime: ${regime}`;
-}
+  // 🟢 Fix: Attach event listeners correctly for Calculate Tax
+  document
+    .getElementById("calculateTaxButton")
+    ?.addEventListener("click", calculateTax);
+  function calculateTax() {
+    let income = parseFloat(document.getElementById("income").value) || 0;
+    let tax = 0;
 
-// Auto-calculate tax when input changes
-document.getElementById("income").addEventListener("input", calculateIncomeTax);
-document
-  .getElementById("tax-regime")
-  .addEventListener("change", calculateIncomeTax);
-
-// Function to submit tax filing
-function submitFiling() {
-  document.getElementById("submission-status").textContent =
-    "✅ Your tax filing has been successfully submitted!";
-}
-
-document.getElementById("security-check").addEventListener("click", () => {
-  document.getElementById("security-result").textContent =
-    "🔍 Running security check...";
-
-  setTimeout(() => {
-    document.getElementById("security-result").textContent =
-      "✅ Your account is secure with strong encryption and 2FA.";
-  }, 2000);
-});
-
-document.getElementById("get-recommendation").addEventListener("click", () => {
-  const goal = document.getElementById("goal").value;
-  const adviceBox = document.getElementById("ai-response");
-  const adviceText = document.getElementById("advice");
-
-  if (!goal) {
-    adviceText.textContent = "⚠️ Please select a financial goal.";
-    adviceBox.classList.remove("hidden");
-    return;
-  }
-
-  adviceBox.classList.add("hidden");
-  adviceText.textContent = "🤖 Analyzing your financial goal...";
-
-  setTimeout(() => {
-    let advice = "";
-
-    switch (goal) {
-      case "saving":
-        advice =
-          "✅ Tip: Set aside at least 20% of your income into a high-interest savings account.";
-        break;
-      case "investment":
-        advice =
-          "📊 Tip: Diversify your portfolio with stocks, bonds, and real estate for stable returns.";
-        break;
-      case "tax":
-        advice =
-          "🧾 Tip: Maximize your tax deductions using Section 80C investments like PPF and ELSS.";
-        break;
-      default:
-        advice = "⚠️ Unable to provide advice. Please select a valid goal.";
+    if (income > 1500000) {
+      tax += (income - 1500000) * 0.3;
+      income = 1500000;
+    }
+    if (income > 1200000) {
+      tax += (income - 1200000) * 0.2;
+      income = 1200000;
+    }
+    if (income > 900000) {
+      tax += (income - 900000) * 0.15;
+      income = 900000;
+    }
+    if (income > 600000) {
+      tax += (income - 600000) * 0.1;
+      income = 600000;
+    }
+    if (income > 300000) {
+      tax += (income - 300000) * 0.05;
     }
 
-    adviceText.textContent = advice;
-    adviceBox.classList.remove("hidden");
-  }, 2000);
+    document.getElementById(
+      "result"
+    ).innerHTML = `Estimated Tax: ₹${tax.toFixed(2)}`;
+    suggestInvestments(income);
+  }
+
+  function suggestInvestments(taxableIncome) {
+    let suggestion =
+      taxableIncome > 500000
+        ? "Consider investing in PPF, ELSS, or NPS to reduce taxable income."
+        : "You are already in a lower tax bracket.";
+    document.getElementById("investmentSuggestion").innerText = suggestion;
+  }
+
+  // 🟢 Fix: Attach event listener correctly for Calculate Investment
+  document
+    .getElementById("calculateInvestmentButton")
+    ?.addEventListener("click", calculateInvestment);
+  function calculateInvestment() {
+    let principal = parseFloat(document.getElementById("principal").value);
+    let rate = parseFloat(document.getElementById("rate").value);
+    let time = parseFloat(document.getElementById("time").value);
+
+    if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
+      alert("Please fill in all fields correctly.");
+      return;
+    }
+
+    let futureValue = principal * Math.pow(1 + rate / 100, time);
+    document.getElementById(
+      "investmentResult"
+    ).innerHTML = `Future Value: ₹${futureValue.toFixed(2)}`;
+  }
+
+  // 🟢 Fix: Get Advice Button
+  document
+    .getElementById("get-recommendation")
+    ?.addEventListener("click", () => {
+      const goal = document.getElementById("goal").value;
+      const adviceText = document.getElementById("advice");
+
+      if (!goal) {
+        adviceText.textContent = "⚠️ Please select a financial goal.";
+        return;
+      }
+
+      adviceText.textContent = "🤖 Analyzing your financial goal...";
+      setTimeout(() => {
+        let advice = "";
+        switch (goal) {
+          case "saving":
+            advice =
+              "✅ Tip: Set aside at least 20% of your income into a high-interest savings account.";
+            break;
+          case "investment":
+            advice =
+              "📊 Tip: Diversify your portfolio with stocks, bonds, and real estate.";
+            break;
+          case "tax":
+            advice =
+              "🧾 Tip: Maximize your tax deductions using Section 80C investments like PPF.";
+            break;
+          default:
+            advice = "⚠️ Unable to provide advice. Please select a valid goal.";
+        }
+        adviceText.textContent = advice;
+      }, 2000);
+    });
+
+  // 🟢 Fix: Security Check Button
+  document.getElementById("security-check")?.addEventListener("click", () => {
+    document.getElementById("security-result").textContent =
+      "🔍 Running security check...";
+    setTimeout(() => {
+      document.getElementById("security-result").textContent =
+        "✅ Your account is secure with strong encryption and 2FA.";
+    }, 2000);
+  });
+
+  document.getElementById("logoutButton")?.addEventListener("click", logout);
+  function logout() {
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("name");
+    sessionStorage.removeItem("name");
+    alert("You have logged out.");
+    window.location.href = "login.html";
+  }
+
+  document
+    .getElementById("user-info-box")
+    ?.addEventListener("click", displayUserInfo);
+  // function displayUserInfo() {
+  //   const userInfoBox = document.getElementById("user-info-box");
+  //   const modal = document.getElementById("user-modal");
+  //   const closeModal = document.querySelector(".close");
+  //   const modalName = document.getElementById("edit-name");
+  //   const modalEmail = document.getElementById("edit-email");
+
+  //   // Fetch user details when clicking on the user box
+  //   userInfoBox.addEventListener("click", async () => {
+  //     try {
+  //       console.log("token: ", token);
+
+  //       const response = await fetch("http://localhost:4000/api/v1/me", {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: ` Bearer ${token}`, // Pass token in Authorization header
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error("HTTP error!");
+  //       }
+
+  //       const user = await response.json();
+
+  //       console.log(user);
+
+  //       if (user) {
+  //         modalName.textContent = user.user.name;
+  //         modalEmail.textContent = user.user.email;
+  //         modal.style.display = "flex"; // Show modal
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user details:", error);
+  //     }
+  //   });
+
+  //   // Close modal when clicking on the close button
+  //   closeModal.addEventListener("click", () => {
+  //     modal.style.display = "none";
+  //   });
+
+  //   // Close modal when clicking outside the modal
+  //   window.addEventListener("click", (e) => {
+  //     if (e.target === modal) {
+  //       modal.style.display = "none";
+  //     }
+  //   });
+  // }
+
+  function displayUserInfo() {
+    const userInfoBox = document.getElementById("user-info-box");
+    const modal = document.getElementById("user-modal");
+    const closeModal = document.querySelector(".close");
+    const modalName = document.getElementById("edit-name");
+    const modalEmail = document.getElementById("edit-email");
+
+    // Fetch user details when clicking on the user box
+    userInfoBox.addEventListener("click", async () => {
+      try {
+        console.log("token: ", token);
+
+        const response = await fetch("http://localhost:4000/api/v1/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: ` Bearer ${token}`, // Pass token in Authorization header
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP error!");
+        }
+
+        const user = await response.json();
+
+        console.log(user);
+
+        if (user) {
+          modalName.textContent = user.user.name;
+          modalEmail.textContent = user.user.email;
+          modal.style.display = "flex"; // Show modal
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    });
+
+    // Close modal when clicking on the close button
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside the modal
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+
+  // display data
+  document.getElementById("showDataBtn")?.addEventListener("click", showData);
+  async function showData() {
+    try {
+      // Check if token exists in local storage
+      console.log("token: " + token);
+
+      if (
+        transactionList.style.display === "none" ||
+        transactionList.style.display === ""
+      ) {
+        transactionList.style.display = "block"; // Show the transaction history
+      } else {
+        transactionList.style.display = "none"; // Hide the transaction history
+        return; // Stop further execution if hiding
+      }
+
+      // Fetch data from backend API
+      const response = await fetch("http://localhost:4000/api/v1/expenses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+        },
+      });
+
+      const transactions = await response.json();
+
+      console.log("transactions: " + JSON.stringify(transactions));
+
+      // Get table body
+      const tableBody = document.getElementById("transactionTableBody");
+      tableBody.innerHTML = ""; // Clear old data
+
+      // Loop through transactions and add rows
+      transactions.forEach((transaction) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${transaction.type}</td>
+          <td>${transaction.category}</td>
+          <td>${transaction.amount}</td>
+          <td>${transaction.date}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 });
